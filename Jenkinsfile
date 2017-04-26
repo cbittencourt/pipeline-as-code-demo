@@ -3,16 +3,17 @@
 stage 'Dev'
 node {
     checkout scm
-    mvn 'clean package'
-    dir('target') {stash name: 'war', includes: 'x.war'}
+    //mvn 'clean package'
+    //dir('target') {stash name: 'war', includes: 'x.war'}
 }
 
 stage 'QA'
-parallel(longerTests: {
-    runTests(30)
-}, quickerTests: {
-    runTests(20)
-})
+    echo "QA stage"
+//parallel(longerTests: {
+//    runTests(30)
+//}, quickerTests: {
+//    runTests(20)
+//})
 
 stage name: 'Staging', concurrency: 1
 node {
@@ -20,11 +21,11 @@ node {
 }
 
 input message: "Does staging look good?"
-try {
-    checkpoint('Before production')
-} catch (NoSuchMethodError _) {
-    echo 'Checkpoint feature available in CloudBees Jenkins Enterprise.'
-}
+//try {
+//    checkpoint('Before production')
+//} catch (NoSuchMethodError _) {
+//    echo 'Checkpoint feature available in CloudBees Jenkins Enterprise.'
+//}
 
 stage name: 'Production', concurrency: 1
 node {
@@ -39,15 +40,18 @@ def mvn(args) {
 
 def runTests(duration) {
     node {
+        echo "testing"
         sh "sleep ${duration}"
         }
     }
 
 def deploy(id) {
-    unstash 'war'
-    sh "cp x.war /tmp/${id}.war"
+    //unstash 'war'
+    //sh "cp x.war /tmp/${id}.war"
+    echo "deploying ${id}"
 }
 
 def undeploy(id) {
-    sh "rm /tmp/${id}.war"
+    //sh "rm /tmp/${id}.war"
+    echo "undeploying ${id}"
 }
